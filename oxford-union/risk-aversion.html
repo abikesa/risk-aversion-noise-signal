@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signal Noise Cosmogram - Pentad Minimalism</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0514 0%, #1a0d2e 50%, #000000 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .pentad-container {
+            position: relative;
+            width: min(90vw, 600px);
+            height: min(90vw, 600px);
+            margin-bottom: 2rem;
+        }
+        
+        .center-hub {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
+            border: 2px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stage {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+        
+        .stage:hover {
+            transform: scale(1.2);
+            border-color: rgba(255,255,255,0.4);
+            z-index: 20;
+        }
+        
+        .stage-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .stage-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        /* Pentagram positioning */
+        .stage-1 { /* Top */
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: radial-gradient(circle, rgba(18,194,233,0.3), rgba(18,194,233,0.1));
+            color: #12c2e9;
+        }
+        
+        .stage-2 { /* Top Right */
+            top: 25%;
+            right: 2%;
+            background: radial-gradient(circle, rgba(255,107,157,0.3), rgba(255,107,157,0.1));
+            color: #ff6b9d;
+        }
+        
+        .stage-3 { /* Bottom Right */
+            bottom: 15%;
+            right: 20%;
+            background: radial-gradient(circle, rgba(196,113,237,0.3), rgba(196,113,237,0.1));
+            color: #c471ed;
+        }
+        
+        .stage-4 { /* Bottom Left */
+            bottom: 15%;
+            left: 20%;
+            background: radial-gradient(circle, rgba(255,184,0,0.3), rgba(255,184,0,0.1));
+            color: #ffb800;
+        }
+        
+        .stage-5 { /* Top Left */
+            top: 25%;
+            left: 2%;
+            background: radial-gradient(circle, rgba(46,213,115,0.3), rgba(46,213,115,0.1));
+            color: #2ed573;
+        }
+        
+        .connecting-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .detail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .detail-content {
+            max-width: 700px;
+            max-height: 90vh;
+            background: rgba(10,5,20,0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow-y: auto;
+        }
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-icon {
+            font-size: 3rem;
+        }
+        
+        .detail-title {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .detail-subtitle {
+            color: #a0a9c0;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-section h3 {
+            color: #12c2e9;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-section p {
+            line-height: 1.7;
+            color: #e0e0e0;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-section strong {
+            color: #ff6b9d;
+            font-weight: 600;
+        }
+        
+        .detail-section em {
+            color: #ffb800;
+            font-style: italic;
+        }
+        
+        .yaml-section {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #c471ed;
+        }
+        
+        .yaml-section pre {
+            color: #a0a9c0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            overflow-x: auto;
+        }
+        
+        .close-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .cosmogram-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .cosmogram-title h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            background: linear-gradient(135deg, #ff6b9d, #c471ed, #12c2e9);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .cosmogram-title p {
+            color: #a0a9c0;
+            font-style: italic;
+            font-size: 1rem;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .stage {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .stage-icon {
+                font-size: 1.5rem;
+            }
+            
+            .stage-name {
+                font-size: 0.7rem;
+            }
+            
+            .center-hub {
+                width: 100px;
+                height: 100px;
+                font-size: 1.5rem;
+            }
+            
+            .detail-content {
+                padding: 1.5rem;
+                max-width: 95vw;
+            }
+            
+            .detail-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cosmogram-title">
+        <h1>Signal Noise Cosmogram</h1>
+        <p>A striking, compact cosmogram — poetic and ontological</p>
+    </div>
+    
+    <div class="pentad-container">
+        <div class="center-hub">
+            ⚡
+        </div>
+        
+        <div class="stage stage-1" data-stage="risk">
+            <div class="stage-icon">🌊</div>
+            <div class="stage-name">Risk</div>
+        </div>
+        
+        <div class="stage stage-2" data-stage="persons">
+            <div class="stage-icon">❤️</div>
+            <div class="stage-name">Persons</div>
+        </div>
+        
+        <div class="stage stage-3" data-stage="time">
+            <div class="stage-icon">🌀</div>
+            <div class="stage-name">Time</div>
+        </div>
+        
+        <div class="stage stage-4" data-stage="companies">
+            <div class="stage-icon">🐬</div>
+            <div class="stage-name">Companies</div>
+        </div>
+        
+        <div class="stage stage-5" data-stage="aversion">
+            <div class="stage-icon">🔁</div>
+            <div class="stage-name">Aversion</div>
+        </div>
+        
+        <div class="connecting-lines">
+            <svg width="100%" height="100%" viewBox="0 0 600 600">
+                <defs>
+                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:rgba(255,255,255,0);stop-opacity:0" />
+                        <stop offset="50%" style="stop-color:rgba(255,255,255,0.2);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+                <polygon points="300,50 485,175 415,375 185,375 115,175" 
+                         fill="none" 
+                         stroke="url(#lineGradient)" 
+                         stroke-width="1" 
+                         opacity="0.3"/>
+            </svg>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Pentad Minimalism | Signal Noise Syntax | Philosophical Constant
+    </div>
+    
+    <div class="detail-overlay" id="detailOverlay">
+        <div class="detail-content">
+            <div class="detail-header">
+                <div class="detail-icon" id="detailIcon">🌊</div>
+                <div>
+                    <div class="detail-title" id="detailTitle">Risk</div>
+                </div>
+            </div>
+            <div class="detail-subtitle" id="detailSubtitle">The Primordial Field</div>
+            <div class="detail-description" id="detailDescription">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <button class="close-btn" onclick="closeDetail()">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        const stageData = {
+            risk: {
+                icon: '🌊',
+                name: 'Risk',
+                subtitle: 'The Primordial Field',
+                interpretation: 'Risk is the ocean — omnipresent, foundational, and unknowable in total. Like entropy or chance, it precedes all action. In this cosmology, it is the <strong>substrate of signal</strong> — stochastic, fertile, dangerous.',
+                function: 'Signal generation and exposure.',
+                emotion: 'Fear, curiosity.',
+                method: 'Bayesian; statistical; existential wager.',
+                yaml: {
+                    symbol: "🌊",
+                    name: "Risk",
+                    domain: "Primordial Field",
+                    role: "Stochastic substrate",
+                    method: "Bayesian wager"
+                }
+            },
+            persons: {
+                icon: '❤️',
+                name: 'Persons',
+                subtitle: 'The Ethical Axis',
+                interpretation: 'Persons are the <strong>source and subject</strong> of all meaning. Interpersonal ethics, empathy, identity, and dignity converge here. Persons feel risk, interpret time, build companies, and bear aversion.',
+                function: 'Intent and experience.',
+                emotion: 'Love, grief, care.',
+                method: 'Ubuntu; intersubjectivity; deontology.',
+                yaml: {
+                    symbol: "❤️",
+                    name: "Persons",
+                    domain: "Ethical Axis",
+                    role: "Subject of meaning",
+                    method: "Ubuntu ethics"
+                }
+            },
+            time: {
+                icon: '🌀',
+                name: 'Time',
+                subtitle: 'The Spiral Medium',
+                interpretation: 'Time is the axis on which all these forces rotate. It binds risk to consequence, persons to memory, and companies to history. It is nonlinear, recursive, fractal.',
+                function: 'Memory, delay, compounding.',
+                emotion: 'Anxiety, anticipation, awe.',
+                method: 'Temporal design; chronopolitics; recursion.',
+                yaml: {
+                    symbol: "🌀",
+                    name: "Time",
+                    domain: "Spiral Medium",
+                    role: "Recursive binding",
+                    method: "Chronopolitics"
+                }
+            },
+            companies: {
+                icon: '🐬',
+                name: 'Companies',
+                subtitle: 'The Artifice Engine',
+                interpretation: 'Companies are collective agents of transformation — vessels that metabolize risk, coordinate persons, and extend agency through time. They are artificial organisms, sometimes humane, sometimes monstrous.',
+                function: 'Structure and scale.',
+                emotion: 'Pride, alienation.',
+                method: 'Incorporation; platform logic; techno-legal synthesis.',
+                yaml: {
+                    symbol: "🐬",
+                    name: "Companies",
+                    domain: "Artifice Engine",
+                    role: "Collective agency",
+                    method: "Incorporation"
+                }
+            },
+            aversion: {
+                icon: '🔁',
+                name: 'Aversion',
+                subtitle: 'The Feedback Limit',
+                interpretation: 'Aversion is the reactive signal — the adaptive modulation that rejects, avoids, or escapes the unbearable. It closes loops. It\'s where feedback becomes refusal.',
+                function: 'Survival and correction.',
+                emotion: 'Revulsion, withdrawal, correction.',
+                method: 'Homeostasis; negative feedback; boundary-making.',
+                yaml: {
+                    symbol: "🔁",
+                    name: "Aversion",
+                    domain: "Feedback Limit",
+                    role: "Adaptive modulation",
+                    method: "Negative feedback"
+                }
+            }
+        };
+        
+        document.querySelectorAll('.stage').forEach(stage => {
+            stage.addEventListener('click', () => {
+                const stageType = stage.dataset.stage;
+                openDetail(stageType);
+            });
+        });
+        
+        function openDetail(stageType) {
+            const data = stageData[stageType];
+            document.getElementById('detailIcon').textContent = data.icon;
+            document.getElementById('detailTitle').textContent = data.name;
+            document.getElementById('detailSubtitle').textContent = data.subtitle;
+            
+            const yamlString = `  - symbol: "${data.yaml.symbol}"
+    name: "${data.yaml.name}"
+    domain: "${data.yaml.domain}"
+    role: "${data.yaml.role}"
+    method: "${data.yaml.method}"`;
+            
+            document.getElementById('detailDescription').innerHTML = `
+                <div class="detail-section">
+                    <h3>Interpretation</h3>
+                    <p>${data.interpretation}</p>
+                </div>
+                <div class="detail-section">
+                    <h3>Function</h3>
+                    <p>${data.function}</p>
+                </div>
+                <div class="detail-section">
+                    <h3>Emotion</h3>
+                    <p>${data.emotion}</p>
+                </div>
+                <div class="detail-section">
+                    <h3>Method</h3>
+                    <p>${data.method}</p>
+                </div>
+                <div class="yaml-section">
+                    <h3>YAML Configuration</h3>
+                    <pre>${yamlString}</pre>
+                </div>
+            `;
+            
+            document.getElementById('detailOverlay').style.display = 'flex';
+        }
+        
+        function closeDetail() {
+            document.getElementById('detailOverlay').style.display = 'none';
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDetail();
+        });
+        
+        document.getElementById('detailOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('detailOverlay')) {
+                closeDetail();
+            }
+        });
+    </script>
+</body>
+</html>
